@@ -2,54 +2,48 @@ package hospital;
 
 import java.util.Arrays;
 
-public class Paciente extends Persona {
-
-	private final int numberDiagnostic = 1;
-	private double[] diagnostico = new double[numberDiagnostic];
-	private String[] diagnosticos = new String[3];
-	private static int diagnosticoCount;
+public class Paciente extends Persona implements Diagnosticable {
+	private final int NUMDIAGNOSTICS = 3;
+	private String[] diagnostics = new String[NUMDIAGNOSTICS];
+	private static int number = 0;
 
 	public Paciente(String name) {
 		super(name);
-		Arrays.fill(diagnostico, -1);
-		numberObject = ++diagnosticoCount;
-	}
-
-	public boolean isValidate() {
-		return isValidate;
-	}
-
-	public String numberType() {
-		return "Soy el Paciente número " + numberObject;
+		Arrays.fill(diagnostics, "");
+		numberObject = ++number;
 	}
 
 	@Override
-	public boolean validate() {
-		return isValidate = true;
+	public String numberType() {
+		return String.format("Soy el paciente número %d", numberObject);
 	}
 
-	public void addDiagnostico(String diagnostico) {
-		if (diagnosticoCount >= 3) {
-			throw new IllegalArgumentException("No se pueden añadir más de tres diagnósticos.");
+	public void insertDiagnostic(String diagnostic) {
+		boolean assigned = false;
+		if (diagnostic.equals("")) {
+			throw new IllegalArgumentException("Se debe insertar un diagnóstico válido");
+		} else {
+			for (int i = 0; i < diagnostics.length && !assigned; i++) {
+				if (diagnostics[i].equals("")) {
+					diagnostics[i] = diagnostic;
+					assigned = true;
+				}
+			}
 		}
-		diagnosticos[diagnosticoCount++] = diagnostico;
+		if (!assigned) {
+			throw new IllegalArgumentException(
+					"Se ha intentado introducir un diagnóstico a un paciente que ya tiene 3 diagnósticos");
+		}
 	}
 
 	@Override
 	public String toString() {
-		if (diagnostico[0] == -1) {
-			return String.format("Paciente %s, %s validado", name, isValidate() ? "Sí" : "No");
-		} else if (diagnostico[1] == -1) {
-			return String.format("Paciente %s, %s validado\n \tdiagnostico1:\n", name, isValidate() ? "Sí" : "No",
-					diagnostico[0]);
-		} else if (diagnostico[2] == -1) {
-			return String.format("Alumno %s, %s validado\n \tdiagnostico1:\n \tdiagnostico2:\n", name,
-					isValidate() ? "Sí" : "No", diagnostico[0], diagnostico[1]);
-		} else {
-			return String.format("Paciente %s, %s validado\n \tdiagnostico1:\n \tdiagnostico2:\n \tdiagnostico3:\n",
-					name, isValidate() ? "Sí" : "No", diagnostico[0], diagnostico[1], diagnostico[2]);
+		StringBuilder chain = new StringBuilder(String.format("Paciente %s", super.toString()));
+		for (int i = 0; i < diagnostics.length; i++) {
+			if (!diagnostics[i].equals("")) {
+				chain.append(String.format("\n    Diagnóstico %d: %s", i + 1, diagnostics[i]));
+			}
 		}
-
+		return chain.toString();
 	}
-
 }

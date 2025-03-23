@@ -1,6 +1,6 @@
 package hospital;
 
-public class Medico extends Persona {
+public class Medico extends Persona implements Sanitary {
 	private double precioConsulta = 0;
 	private Especialidad especialidad;
 	private static int number;
@@ -9,14 +9,6 @@ public class Medico extends Persona {
 		super(nombre);
 		this.especialidad = especialidad;
 		numberObject = ++number;
-	}
-
-	public boolean isValidate() {
-		return isValidate;
-	}
-
-	public String numberType() {
-		return "Soy el Medico número " + numberObject;
 	}
 
 	public void setPrecioConsulta(double precio) {
@@ -28,9 +20,13 @@ public class Medico extends Persona {
 	}
 
 	@Override
+	public String numberType() {
+		return String.format("Soy el médico número %d", numberObject);
+	}
+
+	@Override
 	public String toString() {
-		String estadoValidado = isValidate() ? "validado" : "no validado";
-		return String.format("Medico %s, %s, precio consulta: %.2f, especialidad: %s, %d%%", name, estadoValidado,
-				getPrecioConsulta(), especialidad, (int) (especialidad.getDescuento() * 100));
+		return String.format("Médico %s, Precio consulta: %.2f, Especialidad: %s", super.toString(),
+				getPrecioConsulta(), especialidad);
 	}
 }

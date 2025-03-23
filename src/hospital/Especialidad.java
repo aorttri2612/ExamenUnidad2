@@ -1,7 +1,7 @@
 package hospital;
 
 public enum Especialidad {
-	CARDIOLOGIA(0.10), PEDIATRIA(0.20), NEUROLOGIA(0.30);
+	CARDIOLOGIA(10), PEDIATRIA(20), NEUROLOGIA(30);
 
 	private final double descuento;
 
@@ -14,6 +14,11 @@ public enum Especialidad {
 	}
 
 	public double applyDiscount(double precio) {
-		return precio * (1 - descuento);
+		return precio - (precio * (descuento / 100));
+	}
+
+	@Override
+	public String toString() {
+		return String.format("%s (Descuento: %.0f%%)", name(), descuento);
 	}
 }

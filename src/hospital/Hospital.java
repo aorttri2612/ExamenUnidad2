@@ -1,80 +1,78 @@
 package hospital;
 
 public class Hospital {
-	public static Persona[] createObjects() {
-		Persona[] personas = new Persona[8];
-		personas[0] = new Paciente("Carlos Pérez");
-		personas[1] = new Paciente("Laura Gómez");
-		personas[2] = new Paciente("David Martin");
-		personas[3] = new Paciente("Sofía Ramírez");
-		personas[4] = new Paciente("Antonio Fernández");
-		personas[5] = new Medico("Juan Sánchez", Especialidad.CARDIOLOGIA);
-		personas[6] = new Medico("Ana Mijas", Especialidad.PEDIATRIA);
-		personas[7] = new Medico("Javier Cuevas", Especialidad.NEUROLOGIA);
-		return personas;
-	}
 
-	public void showOrder(Persona[] personas) {
-		for (int i = 0; i < personas.length; i++) {
-			if (personas[i] instanceof Paciente) {
-				Paciente paciente = (Paciente) personas[i];
-				System.out.println(paciente.numberType());
-			}
-			if (personas[i] instanceof Medico) {
-				Medico medico = (Medico) personas[i];
-				System.out.println(medico.numberType());
-			}
-		}
-	}
-
-	public void showObjects(Persona[] personas) {
-		for (int i = 0; i < personas.length; i++) {
-			System.out.println(personas[i]);
-		}
-	}
-
-	public void processData(Validate[] personas) {
-		for (int i = 0; i < personas.length; i++) {
-			personas[i].validate();
-			if (personas[i] instanceof Paciente) {
-				Paciente paciente = (Paciente) personas[i];
-				try {
-					if (i == 3) {
-						paciente.addDiagnostico("Diagnóstico inicial");
-					} else {
-						paciente.addDiagnostico("- seguimiento");
-					}
-				} catch (IllegalArgumentException e) {
-					System.out.println(e.getMessage());
-				}
-			} else if (personas[i] instanceof Medico) {
-				Medico medico = (Medico) personas[i];
-				medico.setPrecioConsulta(10 * (i + 1));
-			}
-		}
-	}
-
-	public void calculatePrice(Persona[] personas) {
-		for (Persona persona : personas) {
-			if (persona instanceof Medico) {
-				Medico medico = (Medico) persona;
-				System.out.printf("Precio consulta de %s: %.2f%n", medico.name, medico.getPrecioConsulta());
-			}
-		}
-
+	public static void main(String[] args) {
+		new Hospital().show();
 	}
 
 	public void show() {
-		Persona[] personas = hospital.Hospital.createObjects();
-		Validate[] personas2 = (Validate[]) personas;
-		new hospital.Hospital().showOrder(personas);
-		new hospital.Hospital().showObjects(personas);
-		new hospital.Hospital().processData(personas2);
-		new hospital.Hospital().showObjects(personas);
-		new hospital.Hospital().calculatePrice(personas);
+		Persona[] personas = createPersons();
+		showOrder(personas);
+		showObjects(personas);
+		processData(personas);
+		showObjects(personas);
+		calculatePrice(personas);
 	}
 
-	public static void main(String[] args) {
-		new hospital.Hospital().show();
+	public Persona[] createPersons() {
+		return new Persona[] { new Paciente("Carlos Pérez"), new Paciente("Laura Gómez"), new Paciente("David Martín"),
+				new Paciente("Pepe Perez"), new Paciente("Rosa Mancebo"),
+				new Medico("Juan Sánchez", Especialidad.CARDIOLOGIA), new Medico("Ana Mijas", Especialidad.PEDIATRIA),
+				new Medico("Javier Cuevas", Especialidad.NEUROLOGIA) };
+	}
+
+	public void showObjects(Persona[] personas) {
+		for (Persona persona : personas) {
+			System.out.println(persona);
+		}
+	}
+
+	public void showOrder(Persona[] personas) {
+		for (Persona persona : personas) {
+			System.out.println(persona.numberType());
+		}
+	}
+
+	public void processData(Validable[] personas) {
+		for (int i = 0; i < personas.length; i++) {
+			personas[i].validate();
+			if (personas[i] instanceof Diagnosticable) {
+				insertDiagnostic((Diagnosticable) personas[i], i);
+			}
+			if (personas[i] instanceof Sanitary) {
+				setVisitPrice((Sanitary) personas[i], i);
+			}
+		}
+	}
+
+	private void insertDiagnostic(Diagnosticable diagnosticable, int numDiag) {
+		final String DIAGNOSTIC_INICIAL = "Diagnóstico inicial";
+		final String DIAGNOSTIC = " - Seguimiento";
+		String diagnostic = DIAGNOSTIC_INICIAL;
+		try {
+			for (int i = 1; i <= numDiag; i++) {
+				diagnosticable.insertDiagnostic(diagnostic);
+				diagnostic += DIAGNOSTIC;
+			}
+		} catch (IllegalArgumentException e) {
+			System.err.println(e.getMessage());
+		}
+	}
+
+	private void setVisitPrice(Sanitary sanitary, int index) {
+		final double QUANTITY = 10;
+		sanitary.setPrecioConsulta(QUANTITY * index);
+	}
+
+	private void calculatePrice(Persona[] personas) {
+		Medico medico;
+		for (int i = 0; i < personas.length; i++) {
+			if (personas[i] instanceof Medico) {
+				medico = (Medico) personas[i];
+				System.out.printf("Precio final de la consulta de %s: %.1f €\n", medico.getName(),
+						medico.getPrecioConsulta());
+			}
+		}
 	}
 }
